@@ -1,27 +1,35 @@
-const ethers = require('ethers')
-const fs = require('fs')
-require('dotenv').config()
+import { providers, Wallet, Contract, ContractFactory } from 'ethers'
+import * as fs from 'fs-extra'
+import 'dotenv/config'
 
 async function main() {
   const { RPC_URL, PRIVATE_KEY } = process.env
-  const provider = new ethers.providers.JsonRpcProvider(RPC_URL)
-  // const wallet = new ethers.Wallet(PRIVATE_KEY, provider)
-  const encryptedJson = fs.readFileSync('./.encryptedKey.json', 'utf-8')
-  let wallet = new ethers.Wallet.fromEncryptedJsonSync(encryptedJson, process.env.PRIVATE_KEY_PASS)
-  wallet = await wallet.connect(provider)
-  const abi = fs.readFileSync('./SimpleStorage_sol_SimpleStorage.abi', 'utf-8')
-  const binary = fs.readFileSync('./SimpleStorage_sol_SimpleStorage.bin', 'utf-8')
+  const provider: providers.JsonRpcProvider = new providers.JsonRpcProvider(RPC_URL)
+  const wallet: Wallet = new Wallet(PRIVATE_KEY, provider)
+  // const encryptedJson = fs.readFileSync('./.encryptedKey.json', 'utf-8')
+  // let wallet = new ethers.Wallet.fromEncryptedJsonSync(encryptedJson, process.env.PRIVATE_KEY_PASS)
+  // wallet = await wallet.connect(provider)
+  const abi: string = fs.readFileSync('./SimpleStorage_sol_SimpleStorage.abi', 'utf-8')
+  const binary: string = fs.readFileSync('./SimpleStorage_sol_SimpleStorage.bin', 'utf-8')
 
-  const contractFactory = new ethers.ContractFactory(abi, binary, wallet)
+  const contractFactory: ContractFactory = new ContractFactory(abi, binary, wallet)
+
   console.log('Deploying...')
-  const contract = await contractFactory.deploy()
+
+  const contract: Contract = await contractFactory.deploy()
   await contract.deployTransaction.wait(1)
+
+  console.log('Address:', contract.address)
+
   //get number
-  const favNumber = await contract.retrieve()
+  const favNumber: number = await contract.retrieve()
+
   console.log('initial: ', favNumber.toString())
-  const res = await contract.store(31)
-  res.wait(1)
-  const updated = await contract.retrieve()
+
+  const res = await contract.store(9)
+  await res.wait(1)
+  const updated: number = await contract.retrieve()
+
   console.log('updated: ', updated.toString())
 
   // const nonce = await wallet.getTransactionCount()
@@ -46,3 +54,5 @@ main()
   .catch((err) => {
     console.error(err)
   })
+
+// 8:17:08
