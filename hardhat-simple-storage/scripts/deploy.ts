@@ -1,21 +1,40 @@
 import { ethers, run, network } from "hardhat";
-import { SimpleStorage } from "../typechain-types";
+import { ChainIds } from "../const/chainIds";
+import { SimpleStorage, SimpleStorage__factory } from "../typechain-types";
+import { VerifyArguments } from "../types/scriptTypes";
 
-async function main() {
+const main = async () => {
   const { getContractFactory } = ethers
-  const SimpleStorageFactory = await getContractFactory('SimpleStorage')
+  const SimpleStorageFactory: SimpleStorage__factory = await getContractFactory('SimpleStorage')
 
   console.log('Deploying ...')
 
   const simpleStorage: SimpleStorage = await SimpleStorageFactory.deploy()
   await simpleStorage.deployed()
 
-  console.log('Deployed to: ', simpleStorage.address)
+  console.log('Contract deployed to: ', simpleStorage.address)
 
-  console.log(network.config)
+  if (network.config.chainId === ChainIds.GOERLI && process.env.ETHERSCAN_API_KEY) {
+    await simpleStorage.deployTransaction.wait(6)
+    await verify({
+      address: simpleStorage.address,
+      args: []
+    })
+  }
+
+  const currentValue = await simpleStorage.retrieve()
+
+  console.log('Current value: ', currentValue)
+
+  const response = await simpleStorage.store(12)
+  response.wait(1)
+
+  const updatedValue = await simpleStorage.retrieve()
+
+  console.log('Updated value: ', updatedValue)
 }
 
-async function verify({ address, args }: { address: string, args: unknown }) {
+const verify = async ({ address, args }: VerifyArguments) => {
   console.log('Verifying ...')
   try {
     await run('verify', {
