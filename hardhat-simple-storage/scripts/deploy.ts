@@ -5,7 +5,7 @@ import { VerifyArguments } from "../types/scriptTypes";
 
 const main = async () => {
   const { getContractFactory } = ethers
-  const SimpleStorageFactory: SimpleStorage__factory = await getContractFactory('SimpleStorage')
+  const SimpleStorageFactory: SimpleStorage__factory = (await getContractFactory('SimpleStorage')) as SimpleStorage__factory
 
   console.log('Deploying ...')
 
@@ -54,3 +54,6 @@ main().catch((error) => {
   console.error(error);
   process.exitCode = 1;
 });
+
+
+// 09:52:16

@@ -5,7 +5,7 @@ import { SimpleStorage, SimpleStorage__factory } from '../typechain-types'
 describe('SimpleStorage', function () {
   let simpleStorageFactory: SimpleStorage__factory, simpleStorage: SimpleStorage
   this.beforeEach(async function () {
-    simpleStorageFactory = await ethers.getContractFactory('SimpleStorage')
+    simpleStorageFactory = await (ethers.getContractFactory('SimpleStorage')) as SimpleStorage__factory
     simpleStorage = await simpleStorageFactory.deploy()
   })
 

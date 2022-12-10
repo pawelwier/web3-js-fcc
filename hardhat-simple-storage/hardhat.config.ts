@@ -6,6 +6,7 @@ import './tasks/block-number'
 import 'hardhat-gas-reporter'
 import 'solidity-coverage'
 import { ChainIds } from "./const/chainIds"
+import '@typechain/hardhat'
 
 const {
   GOERLI_RPC_URL, LOCALHOST_RPC_URL, PRIVATE_KEY, ETHERSCAN_API_KEY, COINMARKETCAP_KEY
@@ -24,7 +25,7 @@ const config: HardhatUserConfig = {
       chainId: ChainIds.HARDHAT || 'chain'
     }
   },
-  solidity: "0.8.17",
+  solidity: "0.8.7",
   etherscan: {
     apiKey: ETHERSCAN_API_KEY || 'key'
   },
